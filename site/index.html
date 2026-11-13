@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Pricelight · Compare hospital prices before you go</title>
+    <meta
+      name="description"
+      content="Search US hospital prices on a map. Compare each hospital's cash price with every insurer's negotiated rate, from the machine-readable files hospitals are required to publish."
+    />
+    <meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)" />
+    <meta name="referrer" content="no-referrer" />
+    <meta property="og:title" content="Pricelight · Compare hospital prices before you go" />
+    <meta
+      property="og:description"
+      content="Cash prices and insurer-negotiated rates for the same service, hospital by hospital, on one map."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <script>
+      // Apply a saved theme before first paint to avoid a flash.
+      try {
+        const t = localStorage.getItem('pricelight-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <noscript>Pricelight needs JavaScript to search and map hospital prices.</noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

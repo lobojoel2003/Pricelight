@@ -1,0 +1,9 @@
+/// <reference types="svelte" />
+/// <reference types="vite/client" />
+
+declare const __BUILD__: {
+  version: string;
+  buildNumber: string;
+  commit: string;
+  date: string;
+};

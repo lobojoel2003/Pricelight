@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Pricelight">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c5cab"/>
+      <stop offset="1" stop-color="#0d366b"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <rect x="11" y="28" width="42" height="8" rx="4" fill="#86b6ef" fill-opacity=".45"/>
+  <line x1="20" y1="20" x2="20" y2="44" stroke="#cde2fb" stroke-width="4" stroke-linecap="round"/>
+  <line x1="44" y1="20" x2="44" y2="44" stroke="#cde2fb" stroke-width="4" stroke-linecap="round"/>
+  <path d="M32 21 43 32 32 43 21 32Z" fill="#eb6834" stroke="#0d366b" stroke-width="3" stroke-linejoin="round"/>
+</svg>
