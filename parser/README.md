@@ -24,14 +24,14 @@ Optional: `pip install "pricelight-parser[polars]"` for `read_polars()`.
 from pricelight_parser import open_mrf
 
 mrf = open_mrf("12-3456789_example-hospital_standardcharges.json.gz")
-print(mrf.format)                   # MRFFormat.JSON / CSV_TALL / CSV_WIDE
-print(mrf.header.hospital_name)     # available before reading any rows
+print(mrf.format)  # MRFFormat.JSON / CSV_TALL / CSV_WIDE
+print(mrf.header.hospital_name)  # available before reading any rows
 
-for row in mrf.rows():              # one ChargeRow per item x payer/plan
+for row in mrf.rows():  # one ChargeRow per item x payer/plan
     if row.code_type == "CPT" and row.code == "70553":
         print(row.payer_name, row.plan_name, row.negotiated_dollar, row.discounted_cash)
 
-for issue in mrf.issues:            # aggregated data-quality findings
+for issue in mrf.issues:  # aggregated data-quality findings
     print(issue.severity, issue.code, issue.count, issue.message)
 ```
 
@@ -55,7 +55,7 @@ from pricelight_parser import record_batch_reader, read_polars
 reader = record_batch_reader("hospital.json")
 duckdb.sql("SELECT payer_name, median(negotiated_dollar) FROM reader GROUP BY ALL")
 
-df = read_polars("hospital.csv")    # requires the polars extra
+df = read_polars("hospital.csv")  # requires the polars extra
 ```
 
 Discovery helpers:
@@ -64,8 +64,8 @@ Discovery helpers:
 from pricelight_parser import parse_hpt_txt, hpt_txt_url, parse_mrf_filename
 
 hpt_txt_url("examplehospital.org")  # 'https://examplehospital.org/cms-hpt.txt'
-parse_hpt_txt(text)                 # [HptEntry(location_name=..., mrf_url=...), ...]
-parse_mrf_filename("123456789_example_standardcharges.csv").ein   # '12-3456789'
+parse_hpt_txt(text)  # [HptEntry(location_name=..., mrf_url=...), ...]
+parse_mrf_filename("123456789_example_standardcharges.csv").ein  # '12-3456789'
 ```
 
 ## Command line

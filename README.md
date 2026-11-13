@@ -140,14 +140,15 @@ from pricelight_parser import open_mrf, to_parquet, record_batch_reader
 
 mrf = open_mrf("12-3456789_example-hospital_standardcharges.json.gz")
 print(mrf.format, mrf.header.hospital_name, mrf.header.version)
-for row in mrf.rows():                      # streams; constant memory
+for row in mrf.rows():  # streams; constant memory
     if row.code == "70553" and row.payer_name:
         print(row.payer_name, row.plan_name, row.negotiated_dollar)
 print([(i.code, i.count) for i in mrf.issues])  # what the file got wrong
 
 result = to_parquet("hospital.csv", "hospital.parquet", constants={"hospital_id": "example"})
 
-import duckdb                                # or query it without writing anything
+import duckdb  # or query it without writing anything
+
 reader = record_batch_reader("hospital.csv")
 duckdb.sql("SELECT payer_name, median(negotiated_dollar) FROM reader GROUP BY 1")
 ```
