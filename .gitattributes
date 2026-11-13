@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.png binary
+*.parquet binary
+*.wasm binary
+uv.lock linguist-generated=true
+site/package-lock.json linguist-generated=true
+parser/tests/fixtures/* linguist-vendored=true
+parser/tests/fixtures/messy_v2_tall.csv -text

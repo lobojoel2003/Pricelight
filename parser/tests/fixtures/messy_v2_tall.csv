@@ -1,0 +1,7 @@
+hospital_name,last_updated_on,version,hospital_location,hospital_address,license_number|TX,"To the best of its knowledge and belief, the hospital has included all applicable standard charge information in accordance with the requirements of 45 CFR 180.50, and the information encoded is true, accurate, and complete as of the date indicated."
+Example Prairie Hospital – Main Campus,7/1/2025,2.0.0,Example Prairie Hospital,600 Mock St Austin TX 78701,,TRUE
+Description , Code | 1 , Code | 1 | Type ,setting,standard_charge | gross,standard_charge | discounted_cash,payer_name,plan_name,standard_charge|negotiated_dollar,standard_charge|negotiated_percentage,standard_charge|negotiated_algorithm,estimated_amount,standard_charge|methodology,standard_charge|min,standard_charge|max,additional_generic_notes
+Lipid panel,80061,cpt,OP,"$1,020.00",N/A,Evergreen Blue,Choice,$31.20,,,,Fee Schedule,31.2,31.2,
+Lipid panel,80061,cpt,OP,"$1,020.00",N/A,,,,,,,,,,
+Tonsillectomy,42820,CPT,outpatient,abc,800,Evergreen Blue,Choice,,,,,,,,
+

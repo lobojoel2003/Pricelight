@@ -1,0 +1,48 @@
+{
+  "hospital_name": "Example Lake Hospital",
+  "last_updated_on": "2026-01-15",
+  "version": "3.0.0",
+  "location_name": ["Example Lake Hospital"],
+  "hospital_address": ["400 Demo Drive, Madison, WI 53703"],
+  "type_2_npi": ["1234567927"],
+  "license_information": {"license_number": "WI-0042", "state": "wi"},
+  "attestation": {"attestation": "To the best of its knowledge and belief, this hospital has included all applicable standard charge information in accordance with the requirements of 45 CFR 180.50, and the information encoded is true, accurate, and complete as of the date in the file. This hospital has included all payer-specific negotiated charges in dollars that can be expressed as a dollar amount. For payer-specific negotiated charges that cannot be expressed as a dollar amount in the machine-readable file or not knowable in advance, the hospital attests that the payer-specific negotiated charge is based on a contractual algorithm, percentage or formula that precludes the provision of a dollar amount and has provided all necessary information available to the hospital for the public to be able to derive the dollar amount, including, but not limited to, the specific fee schedule or components referenced in such percentage, algorithm or formula.", "confirm_attestation": true, "attester_name": "Lee Placeholder"},
+  "standard_charge_information": [
+    {
+      "description": "CT abdomen and pelvis with contrast",
+      "code_information": [{"code": "74177", "type": "CPT"}, {"code": "3500123", "type": "CDM"}],
+      "standard_charges": [
+        {
+          "setting": "outpatient", "gross_charge": 5200, "discounted_cash": 2100, "minimum": 890, "maximum": 2650,
+          "payers_information": [
+            {"payer_name": "Northwind Health", "plan_name": "PPO", "standard_charge_dollar": 1500, "methodology": "fee schedule"},
+            {"payer_name": "Summit Mutual", "plan_name": "HMO Select", "standard_charge_dollar": 2650, "methodology": "fee schedule"},
+            {"payer_name": "Harbor Health Plan", "plan_name": "Medicare Advantage", "standard_charge_dollar": 890, "methodology": "fee schedule"},
+            {"payer_name": "Keystone Care", "plan_name": "Commercial", "standard_charge_percentage": 55, "median_amount": 2210, "10th_percentile": 1800, "90th_percentile": 2900, "count": "34", "methodology": "percent of total billed charges"}
+          ]
+        }
+      ]
+    },
+    {
+      "description": "Vaginal delivery without complicating diagnoses",
+      "code_information": [{"code": "0807", "type": "MSDRG"}],
+      "standard_charges": [
+        {"setting": "inpatient", "gross_charge": 18900, "discounted_cash": 8700, "minimum": 6100, "maximum": 9900,
+         "payers_information": [
+           {"payer_name": "Northwind Health", "plan_name": "PPO", "standard_charge_dollar": 9900, "methodology": "case rate"},
+           {"payer_name": "Summit Mutual", "plan_name": "HMO Select", "standard_charge_dollar": 6100, "methodology": "other"}
+         ]}
+      ]
+    },
+    {
+      "description": "Acetaminophen 500 mg tablet",
+      "code_information": [{"code": "0904-6738-61", "type": "NDC"}],
+      "drug_information": {"unit": 1, "type": "EA"},
+      "standard_charges": [{"setting": "both", "gross_charge": 2.5, "discounted_cash": 1.1}]
+    }
+  ],
+  "modifier_information": [
+    {"description": "Bilateral procedure", "code": "50", "modifier_payer_information": [
+      {"payer_name": "Northwind Health", "plan_name": "PPO", "description": "150% of the standard charge"}]}
+  ]
+}

@@ -1,0 +1,59 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pricelight-parser"
+dynamic = ["version"]
+description = "Streaming parser for US hospital price transparency machine-readable files (CMS JSON, CSV tall and CSV wide) with Parquet output."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.10"
+authors = [{ name = "Pricelight contributors" }]
+keywords = [
+  "hospital",
+  "price transparency",
+  "cms",
+  "machine-readable file",
+  "healthcare",
+  "parquet",
+  "streaming",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
+  "Typing :: Typed",
+]
+dependencies = ["ijson>=3.3", "pyarrow>=15"]
+
+[project.optional-dependencies]
+polars = ["polars>=1.0"]
+
+[project.scripts]
+pricelight-parse = "pricelight_parser.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/lobojoel2003/Pricelight"
+Documentation = "https://github.com/lobojoel2003/Pricelight/tree/main/parser#readme"
+Issues = "https://github.com/lobojoel2003/Pricelight/issues"
+Changelog = "https://github.com/lobojoel2003/Pricelight/blob/main/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "src/pricelight_parser/__about__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pricelight_parser"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "README.md", "LICENSE", "NOTICE"]

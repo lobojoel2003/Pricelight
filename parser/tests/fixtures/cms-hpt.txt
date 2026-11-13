@@ -1,0 +1,11 @@
+location-name: Example Valley Hospital
+source-page-url: https://example.org/price-transparency
+mrf-url: https://example.org/mrf/93-1234567_example-valley-hospital_standardcharges.json
+contact-name: Pat Example
+contact-email: pat@example.org
+
+Location-Name: Example Valley Clinic
+Source-Page-URL: https://example.org/clinic/prices
+MRF-URL: https://example.org/mrf/93-1234567_example-valley-clinic_standardcharges.csv
+Contact-Name: Pat Example
+Contact-Email: pat@example.org

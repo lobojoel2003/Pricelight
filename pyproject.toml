@@ -1,0 +1,65 @@
+# Development workspace for the two Python packages in this repository:
+#
+#   parser/    pricelight-parser  (Apache-2.0)  streaming MRF parser library
+#   pipeline/  pricelight         (AGPL-3.0)    dataset pipeline + CLI
+#
+# This file is not itself a package. Run `uv sync` at the repository root.
+
+[project]
+name = "pricelight-workspace"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = ["pricelight-parser", "pricelight"]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["parser", "pipeline"]
+
+[tool.uv.sources]
+pricelight-parser = { workspace = true }
+pricelight = { workspace = true }
+
+[dependency-groups]
+dev = [
+  "pytest>=8",
+  "pytest-cov>=5",
+  "ruff>=0.8",
+  "mypy>=1.13",
+  "polars>=1.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["site", "docs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "C4", "PIE", "PT"]
+# E501: the formatter owns line length. SIM115: streams are returned to callers on purpose.
+ignore = ["E501", "RUF001", "RUF002", "RUF003", "SIM115", "PT018"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pricelight", "pricelight_parser"]
+
+[tool.pytest.ini_options]
+testpaths = ["parser/tests", "pipeline/tests", "parser/src", "pipeline/src"]
+addopts = "-ra --strict-markers --doctest-modules --import-mode=importlib --ignore-glob=*__main__.py"
+doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS"]
+
+[tool.coverage.run]
+source = ["pricelight_parser", "pricelight"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "@overload"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_ignores = false
+ignore_missing_imports = true
+files = ["parser/src", "pipeline/src"]

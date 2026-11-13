@@ -1,0 +1,23 @@
+{
+  "standard_charge_information": [
+    {
+      "description": "Office visit, new patient, 30 minutes",
+      "code_information": [{"code": "99203", "type": "CPT"}],
+      "standard_charges": [
+        {"setting": "outpatient", "gross_charge": 310, "discounted_cash": 155, "minimum": 98, "maximum": 160,
+         "modifiers": ["25"],
+         "payers_information": [
+           {"payer_name": "Evergreen Blue", "plan_name": "Choice", "standard_charge_dollar": 160, "estimated_amount": 158.5, "methodology": "fee schedule"},
+           {"payer_name": "Pinnacle Medicare Plan", "plan_name": "Advantage", "standard_charge_dollar": 98, "methodology": "fee_schedule"}
+         ]}
+      ]
+    }
+  ],
+  "hospital_name": "Example Coast Hospital",
+  "last_updated_on": "2025-07-01",
+  "version": "2.0.0",
+  "hospital_location": ["Example Coast Hospital"],
+  "hospital_address": ["500 Specimen Rd, Tampa, FL 33602"],
+  "license_information": {"license_number": "FL-9", "state": "FL"},
+  "affirmation": {"affirmation": "To the best of its knowledge and belief, the hospital has included all applicable standard charge information in accordance with the requirements of 45 CFR 180.50, and the information encoded is true, accurate, and complete as of the date indicated.", "confirm_affirmation": true}
+}

@@ -1,0 +1,9 @@
+Pricelight Parser
+Copyright 2026 Pricelight contributors
+
+This product includes software developed by the Pricelight project
+(https://github.com/lobojoel2003/Pricelight).
+
+The file format handled by this software is defined by the Centers for
+Medicare & Medicaid Services (CMS) Hospital Price Transparency technical
+implementation guide (https://github.com/CMSgov/hospital-price-transparency).
