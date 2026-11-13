@@ -56,8 +56,15 @@ The [release workflow](../.github/workflows/release.yml) then:
 7. publishes a GitHub release with the changelog section as notes.
 
 Tags with a pre-release suffix (`v0.2.0-rc.1`) are published as
-pre-releases. To re-publish an existing tag, run the workflow manually with
-the tag as input.
+pre-releases.
+
+### Releasing from the GitHub UI
+
+Instead of pushing a tag you can open **Actions → Release → Run workflow**,
+pick the branch (usually `main`) and enter the tag, e.g. `v0.2.0`. If the tag
+doesn't exist yet, the workflow builds and tests that branch's head commit
+and creates the tag at exactly that commit when it publishes the release.
+Running it for an existing tag re-builds and re-uploads that release.
 
 ## Publishing to PyPI (optional)
 

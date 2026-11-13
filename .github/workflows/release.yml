@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing tag to (re)publish, e.g. v0.1.0
+        description: Tag to publish, e.g. v0.1.0. Created from the selected branch if it does not exist.
         required: true
 
 permissions:
@@ -27,14 +27,24 @@ jobs:
     outputs:
       version: ${{ steps.meta.outputs.version }}
       prerelease: ${{ steps.meta.outputs.prerelease }}
+      target: ${{ steps.meta.outputs.target }}
+      tag_exists: ${{ steps.meta.outputs.tag_exists }}
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ env.TAG }}
           fetch-depth: 0
-      - name: Resolve version
+      - name: Resolve tag, commit and version
         id: meta
         run: |
+          git fetch --force --tags origin
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            git checkout --quiet "$TAG"
+            echo "tag_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Tag $TAG does not exist yet; it will be created at $(git rev-parse HEAD) ($GITHUB_REF_NAME)."
+            echo "tag_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "target=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           version="${TAG#v}"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           if [[ "$version" == *-* ]]; then echo "prerelease=true" >> "$GITHUB_OUTPUT"; else echo "prerelease=false" >> "$GITHUB_OUTPUT"; fi
@@ -132,14 +142,20 @@ jobs:
           GH_REPO: ${{ github.repository }}
           VERSION: ${{ needs.build.outputs.version }}
           PRERELEASE: ${{ needs.build.outputs.prerelease }}
+          TARGET: ${{ needs.build.outputs.target }}
+          TAG_EXISTS: ${{ needs.build.outputs.tag_exists }}
         run: |
           flags=()
           if [ "$PRERELEASE" = "true" ]; then flags+=(--prerelease); else flags+=(--latest); fi
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" dist/* --clobber
             gh release edit "$TAG" --title "Pricelight $VERSION" --notes-file release-notes.md "${flags[@]}"
-          else
+          elif [ "$TAG_EXISTS" = "true" ]; then
             gh release create "$TAG" dist/* --verify-tag --title "Pricelight $VERSION" \
+              --notes-file release-notes.md "${flags[@]}"
+          else
+            # Creates the tag on GitHub at the exact commit that was built and tested.
+            gh release create "$TAG" dist/* --target "$TARGET" --title "Pricelight $VERSION" \
               --notes-file release-notes.md "${flags[@]}"
           fi
 
