@@ -1,0 +1,170 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to (re)publish, e.g. v0.1.0
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+  PRICELIGHT_BUILD_NUMBER: ${{ github.run_number }}
+
+jobs:
+  build:
+    name: Build and verify release artifacts
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      prerelease: ${{ steps.meta.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+          fetch-depth: 0
+      - name: Resolve version
+        id: meta
+        run: |
+          version="${TAG#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [[ "$version" == *-* ]]; then echo "prerelease=true" >> "$GITHUB_OUTPUT"; else echo "prerelease=false" >> "$GITHUB_OUTPUT"; fi
+          echo "PRICELIGHT_VERSION=$version" >> "$GITHUB_ENV"
+          echo "PRICELIGHT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Tag matches every component version
+        run: python3 scripts/version.py check --tag "$TAG"
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Test
+        run: |
+          uv sync --locked
+          uv run ruff check .
+          uv run mypy
+          uv run pytest -q
+      - name: Build Python packages
+        run: |
+          uv build --package pricelight-parser --out-dir dist
+          uv build --package pricelight --out-dir dist
+          uvx twine check --strict dist/*
+      - name: Build demo dataset
+        run: |
+          uv run pricelight --data data run --demo --publish site/public/data
+          tar -czf "dist/pricelight-demo-dataset-${PRICELIGHT_VERSION}.tar.gz" \
+            -C data DEMO manifest.csv lake site
+      - name: Build site
+        working-directory: site
+        run: |
+          npm ci
+          npm run check
+          npm test
+          npm run build
+      - name: Package site
+        run: |
+          mv site/dist "pricelight-site-${PRICELIGHT_VERSION}"
+          tar -czf "dist/pricelight-site-${PRICELIGHT_VERSION}.tar.gz" "pricelight-site-${PRICELIGHT_VERSION}"
+      - name: Build info and checksums
+        run: |
+          cat > dist/BUILD_INFO.json <<JSON
+          {
+            "version": "${PRICELIGHT_VERSION}",
+            "tag": "${TAG}",
+            "commit": "${PRICELIGHT_COMMIT}",
+            "build_number": "${PRICELIGHT_BUILD_NUMBER}",
+            "built_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "workflow_run": "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          }
+          JSON
+          (cd dist && sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt)
+      - name: Release notes from CHANGELOG
+        run: |
+          {
+            python3 scripts/version.py notes "$PRICELIGHT_VERSION"
+            echo
+            echo "---"
+            echo
+            echo "**Build** ${PRICELIGHT_BUILD_NUMBER} · commit \`${PRICELIGHT_COMMIT:0:7}\` · verify downloads with \`sha256sum -c SHA256SUMS.txt\`."
+          } > release-notes.md
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release
+          path: |
+            dist/
+            release-notes.md
+
+  publish:
+    name: Publish GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: release
+      - name: Attest build provenance
+        if: github.event.repository.visibility == 'public'
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            dist/*.whl
+            dist/*.tar.gz
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.build.outputs.version }}
+          PRERELEASE: ${{ needs.build.outputs.prerelease }}
+        run: |
+          flags=()
+          if [ "$PRERELEASE" = "true" ]; then flags+=(--prerelease); else flags+=(--latest); fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+            gh release edit "$TAG" --title "Pricelight $VERSION" --notes-file release-notes.md "${flags[@]}"
+          else
+            gh release create "$TAG" dist/* --verify-tag --title "Pricelight $VERSION" \
+              --notes-file release-notes.md "${flags[@]}"
+          fi
+
+  pypi:
+    name: Publish to PyPI (optional)
+    needs: [build, publish]
+    # Opt in by creating a "pypi" environment, configuring PyPI trusted
+    # publishing for this repository, and setting the repository variable
+    # PUBLISH_TO_PYPI=true.
+    if: vars.PUBLISH_TO_PYPI == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: release
+      - name: Keep only Python distributions
+        run: |
+          mkdir -p pypi
+          cp dist/*.whl pypi/
+          cp dist/pricelight_parser-*.tar.gz dist/pricelight-[0-9]*.tar.gz pypi/ 2>/dev/null || true
+          ls -la pypi
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: pypi/

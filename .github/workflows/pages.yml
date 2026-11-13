@@ -1,0 +1,78 @@
+name: Deploy demo site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  PRICELIGHT_BUILD_NUMBER: ${{ github.run_number }}
+  PRICELIGHT_COMMIT: ${{ github.sha }}
+
+jobs:
+  build:
+    name: Build site with demo data
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    outputs:
+      pages_enabled: ${{ steps.pages.outcome == 'success' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: uv sync --locked
+      - run: uv run pricelight --data data run --demo --publish site/public/data
+      - run: npm ci
+        working-directory: site
+      - run: npm run build
+        working-directory: site
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v6
+        continue-on-error: true
+      - name: Explain how to enable Pages
+        if: steps.pages.outcome != 'success'
+        run: |
+          {
+            echo "### GitHub Pages is not enabled for this repository"
+            echo
+            echo "The site was built but not deployed. To publish it, open"
+            echo "**Settings → Pages → Build and deployment → Source** and choose **GitHub Actions**,"
+            echo "then re-run this workflow."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-pages-artifact@v5
+        if: steps.pages.outcome == 'success'
+        with:
+          path: site/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: needs.build.outputs.pages_enabled == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

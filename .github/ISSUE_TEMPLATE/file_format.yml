@@ -1,0 +1,31 @@
+name: A hospital file doesn't parse correctly
+description: Report a machine-readable file the parser rejects or misreads
+labels: [parser, data]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hospital price files are public, so a link is the most useful thing you can share.
+        Please don't paste personal information.
+  - type: input
+    id: url
+    attributes:
+      label: Link to the file (or the hospital's price-transparency page)
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Layout
+      options: [JSON, CSV tall, CSV wide, Not sure]
+  - type: textarea
+    id: output
+    attributes:
+      label: Output of `pricelight-parse inspect <file>` or `validate <file>`
+      render: text
+  - type: textarea
+    id: expected
+    attributes:
+      label: What looks wrong?
+    validations:
+      required: true

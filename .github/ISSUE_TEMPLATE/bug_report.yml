@@ -1,0 +1,35 @@
+name: Bug report
+description: Something in the site, pipeline or parser doesn't work
+labels: [bug]
+body:
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options: [Website, Pipeline (pricelight), Parser (pricelight-parser), CI / release]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Search for ...
+        2. Select ...
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown in the site footer / About dialog, or `pricelight --version`.
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Browser, OS, Python version, as relevant.
