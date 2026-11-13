@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.33.1-dev57.0",
-    "apache-arrow": "^17.0.0",
+    "apache-arrow": "^21.2.0",
     "d3-ease": "^3.0.2",
     "d3-geo": "^3.1.2",
     "d3-interpolate": "^3.0.2",
