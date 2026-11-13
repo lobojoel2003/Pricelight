@@ -20,6 +20,13 @@ updates:
     directory: /site
     schedule:
       interval: monthly
+    ignore:
+      # svelte-check supports TypeScript 5 and 6 only.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      # Must match the apache-arrow major that @duckdb/duckdb-wasm depends on.
+      - dependency-name: apache-arrow
+        update-types: ["version-update:semver-major"]
     groups:
       site-dev:
         dependency-type: development
